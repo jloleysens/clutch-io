@@ -1,0 +1,12 @@
+{
+  "extends": [
+    "tslint:latest",
+    "tslint-config-prettier",
+    "tslint-plugin-prettier"
+  ],
+  "rules": {
+    "prettier": [true, { "singleQuote": true }],
+    "no-console": false, // Override prettier default rule
+    "no-implicit-dependencies": false,
+  }
+}
