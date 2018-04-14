@@ -1,13 +1,13 @@
-import { Doc, CommandParams } from '../common';
+import { CommandParams, CommandGenerator } from '../common';
+
+export const createInternalCommand = (fn, json) => ({command: `${fn.name}Command`, params: {json}});
 
 export interface InternalCommand {
-    fn: GeneratorFunction;
-    docFac: (doc) => Doc;
+    fn: CommandGenerator;
+    checker(doc): any;
 }
 
-export interface InternalCommandParams extends CommandParams {
+export interface InternalCommandInstructions extends CommandParams {
     _mappedCommand?: InternalCommand;
-    _mappedDocument?: Doc;
-    resolve?: any;
     errors?: Error[];
 }

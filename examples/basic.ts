@@ -1,8 +1,8 @@
 import { createDispatcher } from '../source/dispatcher';
-import { createStore } from '../source/store';
+import { Clutch } from '../source/Clutch';
 
-const store = createStore();
-const dispatcher = createDispatcher(store);
+const c = Clutch.create();
+const dispatcher = createDispatcher(c);
 
-console.log(store);
+console.log(c);
 console.log(dispatcher);

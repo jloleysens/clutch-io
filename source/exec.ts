@@ -1,23 +1,26 @@
-import { CommandInstruction } from './common';
+import { CommandInstruction, CommandResult, CommandGenerator } from './common';
 import { is } from './utils';
 
-function io(instr: CommandInstruction, cb: (r: any, e: boolean) => void) {
+async function io(instr: CommandInstruction, cb: (r: any, e?: boolean) => CommandResult) {
   // TODO map to a particular command
-  const { args } = instr;
-  const result = instr.fn.apply(null, ...args);
-  if (is.promise(result)) {
-    result.then(cb).catch(err => cb(err, true));
+  const { args, fn } = instr;
+  const inter = fn.apply(null, ...args);
+  if (is.promise(inter)) {
+    try {
+      const result = await inter;
+      return cb(result);
+    } catch (e) {
+      return cb(e, true);
+    }
+  } else {
+    return inter;
   }
 }
 
-export function exec(g: GeneratorFunction, ...args: any[]) {
-  if (g.constructor.name == 'GeneratorFunction') throw Error(`Must provide a generator, ${g} is not a generator`);
-
+export async function exec(g: CommandGenerator, ...args: any[]): Promise<CommandResult> {
   const it: Generator = g.apply(null, args);
-
   return next();
-
-  function next(r?: any, isError?: boolean) {
+  async function next(r?: any, isError?: boolean) {
     let result: IteratorResult<any>;
     if (isError) {
       result = it.throw(r);
@@ -26,7 +29,8 @@ export function exec(g: GeneratorFunction, ...args: any[]) {
     }
 
     if (!result.done) {
-      return io(result.value, next);
+      /* Mechanism of recursion */
+      return await io(result.value, next);
     }
     return result.value;
   }
