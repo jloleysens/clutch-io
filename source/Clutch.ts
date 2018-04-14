@@ -1,7 +1,7 @@
 import { CommandParams, Service, Command, CommandGenerator } from './common';
 import { InternalCommand } from './internal';
 import { LIFT } from './symbols';
-import { GenericObject } from '../examples/update-service/interfaces/common';
+import { GenericObject } from './common';
 import * as t from 'io-ts';
 
 type ServiceStates = 'not started' | 'started'  | 'ready';
