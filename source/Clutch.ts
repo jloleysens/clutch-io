@@ -1,7 +1,8 @@
-import { CommandParams, Service, Command, CommandGenerator } from './common';
+import { CommandParams, Service, CommandGenerator } from './common';
 import { InternalCommand } from './internal';
 import { LIFT } from './symbols';
 import { GenericObject } from './common';
+import { provisionLogger } from './provisionLogger';
 import * as t from 'io-ts';
 
 type ServiceStates = 'not started' | 'started'  | 'ready';
@@ -14,14 +15,19 @@ export function lift(fn: any, ...args: any[]) {
   }
 }
 
+interface Settings {
+  timestamp: boolean;
+}
+
 export class Clutch {
   private _internalCommandStore: {[key: string]: InternalCommand} = Object.create(null);
   private _internalServiceStore: {[key: string]: Service} = Object.create(null);
-
   private _serviceState: ServiceStates = 'not started';
 
-  static create() {
-    return new Clutch();
+  constructor(public timestamp: boolean) {}
+
+  static create({timestamp = false}) {
+    return new Clutch(timestamp);
   }
 
   registerService<S extends Service>(name: string, object: S) {
@@ -30,7 +36,7 @@ export class Clutch {
   }
 
   registerCommand<C extends InternalCommand>(fn: CommandGenerator, type: t.InterfaceType<any>) {
-    this._internalCommandStore[fn.name + 'Command'] = {fn, checker: json => type.decode(json)};
+    this._internalCommandStore[fn.name] = {fn, checker: json => type.decode(json), logger: provisionLogger(fn.name)};
     return this;
   }
 

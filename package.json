@@ -1,16 +1,19 @@
 {
-  "name": "clutch",
+  "name": "clutch-io",
   "version": "1.0.0",
-  "main": "index.js",
+  "main": "build/index.js",
   "license": "MIT",
   "dependencies": {
-    "io-ts": "^1.0.5"
+    "loglevel": "^1.6.1"
   },
   "devDependencies": {
+    "@types/loglevel": "^1.5.3",
     "@types/node": "^9.6.5",
     "ts-node": "^5.0.1",
     "tslint": "^5.9.1",
     "typescript": "^2.8.1"
   },
-  "peerDependencies": {}
+  "peerDependencies": {
+    "io-ts": "^1.0.5"
+  }
 }

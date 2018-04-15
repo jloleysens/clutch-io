@@ -1,10 +1,11 @@
 import { CommandParams, CommandGenerator } from '../common';
 
-export const createInternalCommand = (fn, json) => ({command: `${fn.name}Command`, params: {json}});
+export const createInternalCommandInstructions = (fn, json) => ({fn: `${fn.name}`, params: {json}});
 
 export interface InternalCommand {
     fn: CommandGenerator;
     checker(doc): any;
+    logger?: any;
 }
 
 export interface InternalCommandInstructions extends CommandParams {
