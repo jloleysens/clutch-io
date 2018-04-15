@@ -9,6 +9,6 @@
     "outDir": "build",
   },
   "include": [
-    "source/**/*"
+    "lib/**/*.ts"
   ],
 }

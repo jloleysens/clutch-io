@@ -1,5 +1,5 @@
 Arguments: 
-  /Users/jeanlouis/.nvm/versions/node/v9.11.1/bin/node /usr/local/Cellar/yarn/1.5.1_1/libexec/bin/yarn.js add -P
+  /Users/jeanlouis/.nvm/versions/node/v9.11.1/bin/node /usr/local/Cellar/yarn/1.5.1_1/libexec/bin/yarn.js remove reflect-metadata
 
 PATH: 
   /Users/jeanlouis/dev/personal/clutch-io/node_modules/.bin:/Users/jeanlouis/.asdf/shims:/Users/jeanlouis/.asdf/bin:/Users/jeanlouis/.local/bin/luna-studio:/Users/jeanlouis/.nvm/versions/node/v9.11.1/bin:/usr/local/var/rbenv/shims:/usr/local/var/rbenv/shims:/usr/local/bin:/Users/jeanlouis/.oh-my-zsh/custom/plugins/git-open:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin:/Users/jeanlouis/.fzf/bin:/Users/jeanlouis/.config/yarn/global/node_modules/.bin:/Users/jeanlouis/.yarn/bin:/Users/jeanlouis/sdks/android/tools:/Users/jeanlouis/sdks/android/tools/bin
@@ -149,6 +149,10 @@ Lockfile:
     version "2.0.2"
     resolved "https://registry.yarnpkg.com/esutils/-/esutils-2.0.2.tgz#0abf4f1caa5bcb1f7a9d8acc6dea4faaa04bac9b"
   
+  fp-ts@^1.0.0:
+    version "1.2.0"
+    resolved "https://registry.yarnpkg.com/fp-ts/-/fp-ts-1.2.0.tgz#0d0a729c4c39c7c115076f40188fb5f011e56374"
+  
   fs.realpath@^1.0.0:
     version "1.0.0"
     resolved "https://registry.yarnpkg.com/fs.realpath/-/fs.realpath-1.0.0.tgz#1504ad2523158caa40db4a2787cb01411994ea4f"
@@ -184,6 +188,12 @@ Lockfile:
   inherits@2:
     version "2.0.3"
     resolved "https://registry.yarnpkg.com/inherits/-/inherits-2.0.3.tgz#633c2c83e3da42a502f52466022480f4208261de"
+  
+  io-ts@^1.0.5:
+    version "1.0.5"
+    resolved "https://registry.yarnpkg.com/io-ts/-/io-ts-1.0.5.tgz#dec6032f8febb4e8a6c614230823accb50f802fe"
+    dependencies:
+      fp-ts "^1.0.0"
   
   js-tokens@^3.0.2:
     version "3.0.2"
@@ -331,14 +341,10 @@ Lockfile:
     resolved "https://registry.yarnpkg.com/yn/-/yn-2.0.0.tgz#e5adabc8acf408f6385fc76495684c88e6af689a"
 
 Trace: 
-  Error: Missing list of packages to add to your project.
+  Error: This module isn't specified in a manifest.
       at new MessageError (/usr/local/Cellar/yarn/1.5.1_1/libexec/lib/cli.js:186:110)
-      at Object.<anonymous> (/usr/local/Cellar/yarn/1.5.1_1/libexec/lib/cli.js:40587:13)
+      at Object.<anonymous> (/usr/local/Cellar/yarn/1.5.1_1/libexec/lib/cli.js:60445:15)
       at Generator.next (<anonymous>)
       at step (/usr/local/Cellar/yarn/1.5.1_1/libexec/lib/cli.js:98:30)
-      at /usr/local/Cellar/yarn/1.5.1_1/libexec/lib/cli.js:116:14
-      at new Promise (<anonymous>)
-      at new F (/usr/local/Cellar/yarn/1.5.1_1/libexec/lib/cli.js:23451:28)
-      at Object.<anonymous> (/usr/local/Cellar/yarn/1.5.1_1/libexec/lib/cli.js:95:12)
-      at Object.run (/usr/local/Cellar/yarn/1.5.1_1/libexec/lib/cli.js:40599:19)
-      at run (/usr/local/Cellar/yarn/1.5.1_1/libexec/lib/cli.js:89113:20)
+      at /usr/local/Cellar/yarn/1.5.1_1/libexec/lib/cli.js:109:13
+      at <anonymous>

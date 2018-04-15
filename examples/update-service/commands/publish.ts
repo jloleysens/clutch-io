@@ -1,4 +1,4 @@
-import { lift } from '../../../source/Clutch';
+import { lift } from '../../../lib/Clutch';
 
 const someAsyncOperation = () => new Promise(res => setTimeout(() => {
   console.log('We are going async!');

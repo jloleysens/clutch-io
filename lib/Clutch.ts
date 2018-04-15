@@ -5,6 +5,8 @@ import { GenericObject } from './common';
 import { provisionLogger } from './provisionLogger';
 import * as t from 'io-ts';
 
+import { NoCommandFoundError } from './errors';
+
 type ServiceStates = 'not started' | 'started'  | 'ready';
 
 export function lift(fn: any, ...args: any[]) {
@@ -21,18 +23,11 @@ interface Settings {
 
 export class Clutch {
   private _internalCommandStore: {[key: string]: InternalCommand} = Object.create(null);
-  private _internalServiceStore: {[key: string]: Service} = Object.create(null);
-  private _serviceState: ServiceStates = 'not started';
 
   constructor(public timestamp: boolean) {}
 
-  static create({timestamp = false}) {
+  static create({timestamp = true} = {}) {
     return new Clutch(timestamp);
-  }
-
-  registerService<S extends Service>(name: string, object: S) {
-    this._internalServiceStore[name + 'Service'] = object;
-    return this;
   }
 
   registerCommand<C extends InternalCommand>(fn: CommandGenerator, type: t.InterfaceType<any>) {
@@ -40,26 +35,13 @@ export class Clutch {
     return this;
   }
 
-  getServiceBroker() {
-    return Object.assign({}, this._internalServiceStore);
-  }
-
   listCommands() {
     return Object.keys(this._internalCommandStore);
   }
 
   getCommand<C extends InternalCommand>(name: string) {
-    return this._internalCommandStore[name] as C;
-  }
-
-  async initializeServices() {
-    if (this._serviceState != 'not started') {
-      this._serviceState = 'started';
-      const serviceNames = Object.keys(this._internalServiceStore);
-      for (const sn of serviceNames) {
-        await this._internalServiceStore[sn].initialize();
-      }
-      this._serviceState = 'ready';
-    }
+    const cmd = this._internalCommandStore[name] as C;
+    if (!cmd) throw new NoCommandFoundError(name);
+    return cmd;
   }
 }

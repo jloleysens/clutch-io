@@ -9,7 +9,6 @@ const infiniObject = new Proxy({}, {get() {
 
 export const mockCommandParams = (json) => ({
   json,
-  sb: infiniObject,
   logger: {
     trace() {},
     debug() {},
