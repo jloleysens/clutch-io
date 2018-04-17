@@ -1,7 +1,7 @@
-import { CommandParams, Service, CommandGenerator } from './common';
-import { InternalCommand } from './internal';
-import { LIFT } from './symbols';
-import { GenericObject } from './common';
+import {CommandParams, Service, CommandGenerator} from './common';
+import {InternalCommand} from './internal';
+import {LIFT} from './symbols';
+import {is} from './utils';
 import * as t from 'io-ts';
 
 import { NoCommandFoundError } from './errors';
@@ -23,10 +23,8 @@ interface Settings {
 export class Clutch {
   private _internalCommandStore: {[key: string]: InternalCommand} = Object.create(null);
 
-  constructor(public timestamp: boolean) {}
-
-  static create({timestamp = true} = {}) {
-    return new Clutch(timestamp);
+  static create() {
+    return new Clutch();
   }
 
   registerCommand<C extends InternalCommand>(fn: CommandGenerator, type: t.InterfaceType<any>) {
@@ -38,7 +36,8 @@ export class Clutch {
     return Object.keys(this._internalCommandStore);
   }
 
-  getCommand<C extends InternalCommand>(name: string) {
+  getCommand<C extends InternalCommand>(fn: string | Function) {
+    const name = is.string(fn) ? fn : (fn as any).name;
     const cmd = this._internalCommandStore[name] as C;
     if (!cmd) throw new NoCommandFoundError(name);
     return cmd;

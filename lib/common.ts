@@ -1,4 +1,4 @@
-export type CommandGenerator = (json: any, services: any, logger: any) => IterableIterator<any>;
+export type CommandGenerator = (...args: any[]) => IterableIterator<any>;
 
 export interface GenericObject {
   [key: string]: any;
