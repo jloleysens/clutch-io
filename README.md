@@ -4,7 +4,7 @@ A very simple set of tools for writing server-side functionality based on action
 
 This project is inspired and draws from [redux-saga](https://github.com/redux-saga/redux-saga)'s implementation but strips out the store and replaces it with a class against which commands can be registered that ultimately forms the API of your server/service/bot/whatever else you are building.
 
-The reasoning is that front-end logic in JS/TS has implemented some extremely interesting mechanisms that show a lot of value for the backend. An interesting [gist](https://gist.github.com/wmertens/a408e15a08301081ebad) expresses some of this thinking.
+The reasoning is that typically front-end tech in JS/TS has implemented some extremely interesting mechanisms that show a lot of promise for the backend/Node environemnt. An interesting [gist](https://gist.github.com/wmertens/a408e15a08301081ebad) expresses more of this sentiment.
 
 # Concepts
 
