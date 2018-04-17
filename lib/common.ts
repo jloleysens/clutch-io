@@ -4,10 +4,6 @@ export interface GenericObject {
   [key: string]: any;
 }
 
-export interface ServiceBroker {
-  [key: string]: Service;
-}
-
 export interface CommandInstruction {
   fn: (...args: any[]) => any,
   args: any[],

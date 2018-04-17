@@ -4,7 +4,7 @@ import { is } from './utils';
 async function io(instr: CommandInstruction, cb: (r: any, e?: boolean) => CommandResult) {
   // TODO map to a particular command
   const { args, fn } = instr;
-  const inter = fn.apply(null, ...args);
+  const inter = fn.call(null, ...args);
   if (is.promise(inter)) {
     try {
       const result = await inter;
@@ -27,7 +27,6 @@ export async function exec(g: CommandGenerator, ...args: any[]): Promise<Command
     } else {
       result = it.next(r);
     }
-
     if (!result.done) {
       /* Mechanism of recursion */
       return await io(result.value, next);

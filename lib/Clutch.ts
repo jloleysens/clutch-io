@@ -2,7 +2,6 @@ import { CommandParams, Service, CommandGenerator } from './common';
 import { InternalCommand } from './internal';
 import { LIFT } from './symbols';
 import { GenericObject } from './common';
-import { provisionLogger } from './provisionLogger';
 import * as t from 'io-ts';
 
 import { NoCommandFoundError } from './errors';
@@ -31,7 +30,7 @@ export class Clutch {
   }
 
   registerCommand<C extends InternalCommand>(fn: CommandGenerator, type: t.InterfaceType<any>) {
-    this._internalCommandStore[fn.name] = {fn, checker: json => type.decode(json), logger: provisionLogger(fn.name)};
+    this._internalCommandStore[fn.name] = {fn, checker: json => type.decode(json)};
     return this;
   }
 

@@ -6,14 +6,3 @@ export const is = {
 const infiniObject = new Proxy({}, {get() {
   return infiniObject;
 }});
-
-export const mockCommandParams = (json) => ({
-  json,
-  logger: {
-    trace() {},
-    debug() {},
-    info() {},
-    warn() {},
-    error() {},
-  }
-});

@@ -7,8 +7,6 @@ declare module 'clutch-io' {
   }
   export function createDispatcher(clutch: Clutch): (fn: string, json: any) => Promise<any>;
   export function lift(fn: any, ...args: any[]): void;
-  export function mockCommandParams(json: any): {logger: any, json: any};
-  export type ServiceBroker = {[key: string]: {initialize(): Promise<void>, [key: string]: any}}
 
   export class ClutchBaseError extends Error {}
   export class NoCommandFoundError extends Error {}
