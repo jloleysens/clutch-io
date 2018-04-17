@@ -8,7 +8,7 @@ The reasoning is that front-end logic in JS/TS has implemented some extremely in
 
 # Concepts
 
-**Generators**: Are a special kind of function are used for making glorious testability of functions with I/O side-effects by essentially side-stepping them and enabling you to test your logic the [ritway](https://github.com/ericelliott/riteway).
+**Generators**: Are a special kind of function are used for making glorious testability of functions with I/O side-effects by essentially side-stepping them and enabling you to test your logic the [riteway](https://github.com/ericelliott/riteway).
 
 **Command**: A set of instructions that probably contains some I/O effects. In `clutch-io`, like in `redux-saga`, commands are implemented using generators, or constructs that implement the iterator interface.
 
