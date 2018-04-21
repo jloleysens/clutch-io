@@ -1,12 +1,9 @@
-import {CommandParams, Service, CommandGenerator} from './common';
-import {InternalCommand} from './internal';
+import {CommandGenerator} from './common';
+import {InternalCommand, DISPATCHER} from './internal';
 import {LIFT} from './symbols';
 import {is} from './utils';
-import * as t from 'io-ts';
 
-import { NoCommandFoundError } from './errors';
-
-type ServiceStates = 'not started' | 'started'  | 'ready';
+import { NoCommandFoundError, ClutchBaseError } from './errors';
 
 export function lift(fn: any, ...args: any[]) {
   return {
@@ -16,19 +13,31 @@ export function lift(fn: any, ...args: any[]) {
   }
 }
 
-interface Settings {
-  timestamp: boolean;
-}
+const noop = () => {};
 
 export class Clutch {
   private _internalCommandStore: {[key: string]: InternalCommand} = Object.create(null);
+  private _middlewares = [];
 
-  static create() {
-    return new Clutch();
+  constructor(public checker: (v) => string | string[] | null){}
+
+  static create(checker: (v) => any = noop) {
+    return new Clutch(checker);
   }
 
-  registerCommand<C extends InternalCommand>(fn: CommandGenerator, type: t.InterfaceType<any>) {
-    this._internalCommandStore[fn.name] = {fn, checker: json => type.decode(json)};
+  use(middlewares: any[]) {
+    if (!is.array(middlewares)) throw new ClutchBaseError('Middlewares must be in an array');
+    if (!middlewares.every(is.function)) throw new ClutchBaseError('All middlewares must be functions');
+    this._middlewares = middlewares;
+    if (!middlewares.some(fn => fn[DISPATCHER])) {
+      const token = () => {};
+      token[DISPATCHER] = true;
+      this._middlewares.push(token);
+    }
+  }
+
+  registerCommand(fn: CommandGenerator, validator: (...args) => any) {
+    this._internalCommandStore[fn.name] = {fn, validator};
     return this;
   }
 

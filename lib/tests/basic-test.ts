@@ -1,13 +1,11 @@
 import {describe} from 'riteway';
 import {Clutch} from '../Clutch';
-import * as t from 'io-ts';
 
 describe('basic/Clutch()', async should => {
-  const clutch = new Clutch();
+  const clutch = Clutch.create();
   const { assert } = should();
 
   function* test() {}
-  const i = t.interface({test: t.string});
 
   assert({
     given: 'a new instance',
@@ -16,7 +14,7 @@ describe('basic/Clutch()', async should => {
     expected: [],
   });
 
-  clutch.registerCommand(test, i);
+  clutch.registerCommand(test, json => {});
 
   assert({
     given: 'a new command',

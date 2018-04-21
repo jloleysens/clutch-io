@@ -1,22 +1,20 @@
 import {exec} from './exec';
 import {Clutch} from './Clutch';
-import {CommandParams} from './common';
-import {InternalCommandInstructions, InternalCommand} from './internal';
-import {reporter} from './internal/error-reporter';
 import {is} from './utils';
+import {InvalidJSONDocError} from './errors';
+import {DISPATCHER} from './internal';
 
 export function createDispatcher(clutch: Clutch) {
-
   async function dispatch(fn: Function | string, ...args: any[]) {
     const _fn = clutch.getCommand(is.string(fn) ? fn : (fn as any).name);
-    // TODO: Create a composable function for swapping out validation
-    const vResult = _fn.checker(args[0]);
-    reporter.check(vResult);
-    //
+    const errors = clutch.checker(_fn.validator(args[0]));
+    if (errors != null && errors.length) {
+      throw new InvalidJSONDocError(is.array(errors) ? (errors as any).join(', ') : errors);
+    }
     const result = await exec(_fn.fn, ...args);
     return result;
   }
-
+  dispatch[DISPATCHER] = true;
   return dispatch;
 }
 

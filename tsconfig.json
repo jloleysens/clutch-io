@@ -9,7 +9,8 @@
     "outDir": "build",
     "typeRoots": [
       "types"
-    ]
+    ],
+    "types": ["node"]
   },
   "include": [
     "lib/**/*.ts"

@@ -13,10 +13,6 @@ export interface CommandResult {
   success: boolean;
   result?: GenericObject;
 }
-export interface Service {
-  initialize(): Promise<void>;
-}
-
 export interface CommandParams {
   fn: string;
   params: {json: any};

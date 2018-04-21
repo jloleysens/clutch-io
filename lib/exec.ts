@@ -1,5 +1,6 @@
-import { CommandInstruction, CommandResult, CommandGenerator } from './common';
-import { is } from './utils';
+import {CommandInstruction, CommandResult, CommandGenerator} from './common';
+import {is} from './utils';
+import {LIFT} from './symbols';
 
 async function io(instr: CommandInstruction, cb: (r: any, e?: boolean) => CommandResult) {
   // TODO map to a particular command
@@ -27,7 +28,7 @@ export async function exec(g: CommandGenerator, ...args: any[]): Promise<Command
     } else {
       result = it.next(r);
     }
-    if (!result.done) {
+    if (!result.done && result.value[LIFT]) {
       /* Mechanism of recursion */
       return await io(result.value, next);
     }

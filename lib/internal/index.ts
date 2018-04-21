@@ -2,7 +2,7 @@ import { CommandParams, CommandGenerator } from '../common';
 
 export interface InternalCommand {
     fn: CommandGenerator;
-    checker(doc): any;
+    validator(doc): any;
     logger?: any;
 }
 
@@ -11,3 +11,5 @@ export interface InternalCommandInstructions extends CommandParams {
     errors?: Error[];
     logger?: any;
 }
+
+export const DISPATCHER = Symbol.for('DISPATCHER');
