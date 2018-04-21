@@ -1,5 +1,5 @@
 import {describe} from 'riteway';
-import {createDispatcher} from '../dispatcher';
+import {createDispatcher} from '../index';
 
 describe('dispatcher', async should => {
 });

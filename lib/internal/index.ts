@@ -1,4 +1,4 @@
-import { CommandParams, CommandGenerator } from '../common';
+import { CommandParams, CommandGenerator } from '../index';
 
 export interface InternalCommand {
     fn: CommandGenerator;

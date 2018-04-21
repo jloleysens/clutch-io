@@ -1,5 +1,5 @@
 import {describe} from 'riteway';
-import {Clutch} from '../Clutch';
+import {Clutch} from '../index';
 
 describe('basic/Clutch()', async should => {
   const clutch = Clutch.create();
