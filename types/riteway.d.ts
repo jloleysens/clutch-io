@@ -6,6 +6,7 @@ interface AssertionArgs {
 }
 type Assert = (args: AssertionArgs) => void;
 type Should = (desc?: string) => {assert: Assert};
+
 declare module 'riteway' {
     export function describe(description: string, fn: (should: Should) => any | Promise<any>)
 }

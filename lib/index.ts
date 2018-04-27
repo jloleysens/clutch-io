@@ -1,8 +1,8 @@
-import {DISPATCHER, InternalCommand, InternalCommandInstructions} from './internal';
-import {LIFT} from './symbols';
+import {DISPATCHER, LIFT, InternalCommand, InternalInstruction} from './internal';
 import {is} from './utils'
-import {NoCommandFoundError, ClutchBaseError, InvalidJSONDocError} from './errors';
+import {NoCommandFoundError, ClutchBaseError, InvalidArgsError} from './errors';
 
+const noop = () => {};
 
 export type CommandGenerator = (...args: any[]) => IterableIterator<any>;
 
@@ -10,54 +10,15 @@ export interface GenericObject {
   [key: string]: any;
 }
 
-export interface CommandInstruction {
-  fn: (...args: any[]) => any,
-  args: any[],
-};
-
-export interface CommandResult {
-  success: boolean;
-  result?: GenericObject;
-}
-export interface CommandParams {
-  fn: string;
-  params: {json: any};
-}
-
-interface CommandOutput {
-  result: any;
-}
-
-
-export function lift(fn: any, ...args: any[]) {
-  return {
-    [LIFT]: true,
-    fn,
-    args
-  }
-}
-
-const noop = () => {};
+export * from './errors';
 
 export class Clutch {
   private _internalCommandStore: {[key: string]: InternalCommand} = Object.create(null);
-  private _middlewares = [];
 
   constructor(public checker: (v) => string | string[] | null){}
 
   static create(checker: (v) => any = noop) {
     return new Clutch(checker);
-  }
-
-  use(middlewares: any[]) {
-    if (!is.array(middlewares)) throw new ClutchBaseError('Middlewares must be in an array');
-    if (!middlewares.every(is.function)) throw new ClutchBaseError('All middlewares must be functions');
-    this._middlewares = middlewares;
-    if (!middlewares.some(fn => fn[DISPATCHER])) {
-      const token = () => {};
-      token[DISPATCHER] = true;
-      this._middlewares.push(token);
-    }
   }
 
   registerCommand(fn: CommandGenerator, validator: (...args) => any) {
@@ -78,51 +39,128 @@ export class Clutch {
 }
 
 export function createDispatcher(clutch: Clutch) {
-  async function dispatch(fn: Function | string, ...args: any[]) {
-    const _fn = clutch.getCommand(is.string(fn) ? fn : (fn as any).name);
-    const errors = clutch.checker(_fn.validator(args[0]));
-    if (errors != null && errors.length) {
-      throw new InvalidJSONDocError(is.array(errors) ? (errors as any).join(', ') : errors);
-    }
-    const result = await exec(_fn.fn, ...args);
-    return result;
+  function dispatch(fn: Function | string, ...args: any[]): Promise<any> {
+    let it: Generator, _t = new Task((outerReject, outerResolve) => {
+      const _fn = clutch.getCommand(is.string(fn) ? fn : (fn as any).name);
+      const errors = clutch.checker(_fn.validator(...args));
+      if (errors != null && errors.length) {
+        outerReject(new InvalidArgsError(is.array(errors) ? (errors as any).join(', ') : errors));
+      } else {
+        it = _fn.fn.call(null, ...args);
+        next();
+      }
+
+      function next(r?: any, isError?: boolean) {
+        let result: IteratorResult<any>;
+        if (isError) {
+          outerReject(r);
+          return;
+        } else {
+          result = it.next(r);
+        }
+        if (!result.done) {
+          /* Mechanism of recursion */
+          io(result.value, next);
+        } else {
+          outerResolve(result.value);
+        }
+      }
+    });
+
+    return new Promise((res, rej) => {
+      _t.fork(r => {
+        rej(r);
+      }, res);
+    });
   }
   dispatch[DISPATCHER] = true;
   return dispatch;
 }
 
-async function io(instr: CommandInstruction, cb: (r: any, e?: boolean) => CommandResult) {
-    // TODO map to a particular command
-    const { args, fn } = instr;
-    const inter = fn.call(null, ...args);
-    if (is.promise(inter)) {
-      try {
-        const result = await inter;
-        return cb(result);
-      } catch (e) {
-        return cb(e, true);
-      }
-    } else {
-      return inter;
-    }
-  }
-
-export async function exec(g: CommandGenerator, ...args: any[]): Promise<CommandResult> {
-  const it: Generator = g.apply(null, args);
-  return next();
-  async function next(r?: any, isError?: boolean) {
-    let result: IteratorResult<any>;
-    if (isError) {
-      result = it.throw(r);
-    } else {
-      result = it.next(r);
-    }
-    if (!result.done && result.value[LIFT]) {
-      /* Mechanism of recursion */
-      return await io(result.value, next);
-    }
-    return result.value;
+function io(value: Task<any>, cb: (r: any, e?: boolean) => any) {
+  if (value instanceof Task) {
+    value.fork(
+      e => cb(e, true),
+      s => cb(s),
+    )
+  } else {
+    return value;
   }
 }
 
-export * from './errors';
+export class Task<V> {
+  fork: (...args) => any;
+
+  constructor(calc?: (reject: (r) => any, resolve: (s) => void) => any) {
+    this.fork = calc;
+  }
+
+  /**
+   * @summary of:: T f => a -> f a
+   */
+  static of<R>(value: R) {
+    return new Task<R>((rej, res) => {
+      res(value);
+    });
+  }
+
+  /**
+   * @summary map:: T f => f a ~> (a -> b) -> f b
+   */
+  map<R>(fn:(v: any) => R): Task<R> {
+    return new Task<R>((rej, res) => {
+      this.fork(
+        r => rej(r),
+        s => res(fn(s))
+      )
+    });
+  }
+
+  /**
+   * @summary ap:: T f => f a ~> f (a -> b) -> f b
+   */
+  ap(that: Task<any>) {
+    return new Task((rej, res) => {
+      let val, func;
+      const sharedResolve = (isThat: boolean) => (x: any) => {
+        if (isThat) val = x;
+        else func = x;
+
+        if (val && func) {
+          return res(func(val));
+        }
+        return x;
+      };
+      const sharedReject = (e) => {
+        throw e;
+      }
+      this.fork(sharedReject, sharedResolve(false));
+      that.fork(sharedReject, sharedResolve(true));
+    });
+  }
+
+  /**
+   * @summary flatMap:: T m => m a ~> (a -> m b) -> m b
+   */
+  flatMap<R>(f: (...args) => any): Task<R> {
+    return new Task((rej, res) => {
+      return this.fork(
+        r => rej(r),
+        s => f(s).fork(rej, res)
+      )
+    })
+  }
+
+  empty() {
+    return Task.of<any>(noop);
+  }
+
+  // Start of util functions
+  static callP<R>(fn: (...args) => Promise<any>, ...args): Task<R> {
+    return new Task((rej, res) => {
+      fn.apply(null, args)
+      .then(res)
+      .catch(rej);
+    })
+  }
+}

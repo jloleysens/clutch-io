@@ -8,7 +8,6 @@
   "license": "MIT",
   "dependencies": {},
   "devDependencies": {
-    "@types/node": "^9.6.6",
     "@types/tape": "^4.2.32",
     "riteway": "^2.0.3",
     "tape": "^4.9.0",

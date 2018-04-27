@@ -3,13 +3,8 @@ export class ClutchBaseError extends Error {
     super(message);
   }
 }
-export class NoJSONDocError extends ClutchBaseError {
-  constructor(message) {
-    super(message)
-  }
-}
 
-export class InvalidJSONDocError extends ClutchBaseError {
+export class InvalidArgsError extends ClutchBaseError {
   constructor(message) {
     super(message);
   }

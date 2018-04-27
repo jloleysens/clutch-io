@@ -1,15 +1,13 @@
-import { CommandParams, CommandGenerator } from '../index';
+import {CommandGenerator} from '../index';
 
 export interface InternalCommand {
-    fn: CommandGenerator;
-    validator(doc): any;
-    logger?: any;
+  fn: CommandGenerator;
+  validator(...args): any;
 }
 
-export interface InternalCommandInstructions extends CommandParams {
-    _mappedCommand?: InternalCommand;
-    errors?: Error[];
-    logger?: any;
+export interface InternalInstruction {
+
 }
 
 export const DISPATCHER = Symbol.for('DISPATCHER');
+export const LIFT = Symbol('lift');
