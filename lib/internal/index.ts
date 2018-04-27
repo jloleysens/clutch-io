@@ -10,4 +10,3 @@ export interface InternalInstruction {
 }
 
 export const DISPATCHER = Symbol.for('DISPATCHER');
-export const LIFT = Symbol('lift');

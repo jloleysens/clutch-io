@@ -10,7 +10,7 @@ The reasoning is that typically front-end tech in JS/TS has implemented some ext
 
 **Generators**: Are a special kind of function used for making glorious testability given I/O effects. They essentially enable side-stepping effects which then enables you to test your logic the [riteway](https://github.com/ericelliott/riteway). This is also where the lib gets its name from; in a manual transmission car you can run the engine without it's intended side-effects (the wheels turning) if you've pushed the clutch in. Generators are one way of helping do this for your code. That's about the extent of the metaphor.
 
-**Dispatcher**: This is a function that closes over some state, i.e., your collection of commands, and then takes calls to it as signals that it has to execute a command inside of the Command Interpreter Environment™† ([here](./lib/exec.ts))
+**Dispatcher**: This is a function that closes over some state, i.e., your collection of commands, and then takes calls to it as signals that it has to execute a command inside of the Command Interpreter Environment™† ([here](./lib/index.ts))
 
 **Tasks**: This is a data-type that adheres to the [fantasy-land](https://github.com/fantasyland/fantasy-land) monad specification and is specifically a way of dealing with future values. In this library a specific version of this is shipped with helper methods that make it a bit clearer in the consuming code what is happening.
 

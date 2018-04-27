@@ -1,4 +1,4 @@
-import {DISPATCHER, LIFT, InternalCommand, InternalInstruction} from './internal';
+import {DISPATCHER, InternalCommand, InternalInstruction} from './internal';
 import {is} from './utils'
 import {NoCommandFoundError, ClutchBaseError, InvalidArgsError} from './errors';
 
