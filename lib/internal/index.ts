@@ -5,8 +5,4 @@ export interface InternalCommand {
   validator(...args): any;
 }
 
-export interface InternalInstruction {
-
-}
-
 export const DISPATCHER = Symbol.for('DISPATCHER');
