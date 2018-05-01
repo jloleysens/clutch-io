@@ -14,6 +14,7 @@ declare module 'clutch-io' {
     ap<R>(m: Task<any>): Task<R>;
     flatMap<R>(): Task<R>
     empty(): Task<() => {}>
+    toJSON(): {fn: any, args: any};
     static callP<R>(fn: (...args) => R, ...args): Task<R>;
   }
 

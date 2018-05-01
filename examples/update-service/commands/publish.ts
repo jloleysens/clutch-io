@@ -1,4 +1,4 @@
-import { lift } from '../../../lib/Clutch';
+import { Task } from '../../../lib';
 
 const someAsyncOperation = () => new Promise(res => setTimeout(() => {
   console.log('We are going async!');
@@ -6,6 +6,7 @@ const someAsyncOperation = () => new Promise(res => setTimeout(() => {
 }, 500));
 
 export function* publish(document: any, services: any, logger: any) {
-  const result = yield lift(someAsyncOperation, document);
+  // Create a new task using Tasks's callP helper
+  const result = yield Task.callP(someAsyncOperation, document);
   return { success: result };
 }

@@ -1,5 +1,5 @@
-import {DISPATCHER, InternalCommand } from './internal';
-import {is} from './utils'
+import {DISPATCHER, InternalCommand} from './internal';
+import {is} from './utils';
 import {NoCommandFoundError, ClutchBaseError, InvalidArgsError} from './errors';
 
 const noop = () => {};
@@ -17,15 +17,24 @@ export class Clutch {
 
   constructor(public checker: (v) => string | string[] | null){}
 
+  /**
+   * @summary create :: Clutch f => a -> f b
+   */
   static create(checker: (v) => any = noop) {
     return new Clutch(checker);
   }
 
+  /**
+   * @summary registerCommand :: Clutch f => f a ~> (f, v) -> f b
+   */
   registerCommand(fn: CommandGenerator, validator: (...args) => any) {
     this._internalCommandStore[fn.name] = {fn, validator};
     return this;
   }
 
+  /**
+   * @summary listCommands :: Clutch f => f a ~> () -> a
+   */
   listCommands() {
     return Object.keys(this._internalCommandStore);
   }
@@ -91,6 +100,8 @@ function io(value: Task<any>, cb: (r: any, e?: boolean) => any) {
 export class Task<V> {
   fork: (...args) => any;
 
+  protected _json: {_fn: (...args) => any, _args: any[]};
+
   constructor(calc?: (reject: (r) => any, resolve: (s) => void) => any) {
     this.fork = calc;
   }
@@ -99,68 +110,97 @@ export class Task<V> {
    * @summary of:: T f => a -> f a
    */
   static of<R>(value: R) {
-    return new Task<R>((rej, res) => {
-      res(value);
-    });
+    return new Task<R>(
+      (rej, res) => {
+        res(value);
+      }
+    );
   }
 
   /**
    * @summary map:: T f => f a ~> (a -> b) -> f b
    */
   map<R>(fn:(v: any) => R): Task<R> {
-    return new Task<R>((rej, res) => {
-      this.fork(
-        r => rej(r),
-        s => res(fn(s))
-      )
-    });
+    return this.__new<R>(
+      (rej, res) => {
+        this.fork(
+          r => rej(r),
+          s => res(fn(s))
+        )
+      }
+    );
   }
 
   /**
    * @summary ap:: T f => f a ~> f (a -> b) -> f b
    */
   ap(that: Task<any>) {
-    return new Task((rej, res) => {
-      let val, func;
-      const sharedResolve = (isThat: boolean) => (x: any) => {
-        if (isThat) val = x;
-        else func = x;
+    return this.__new((rej, res) => {
+        let val, func;
+        const sharedResolve = (isThat: boolean) => (x: any) => {
+          if (isThat) val = x;
+          else func = x;
 
-        if (val && func) {
-          return res(func(val));
+          if (val && func) {
+            return res(func(val));
+          }
+          return x;
+        };
+        const sharedReject = (e) => {
+          throw e;
         }
-        return x;
-      };
-      const sharedReject = (e) => {
-        throw e;
+        this.fork(sharedReject, sharedResolve(false));
+        that.fork(sharedReject, sharedResolve(true));
       }
-      this.fork(sharedReject, sharedResolve(false));
-      that.fork(sharedReject, sharedResolve(true));
-    });
+    );
   }
 
   /**
    * @summary flatMap:: T m => m a ~> (a -> m b) -> m b
    */
   flatMap<R>(f: (...args) => any): Task<R> {
-    return new Task((rej, res) => {
-      return this.fork(
-        r => rej(r),
-        s => f(s).fork(rej, res)
-      )
-    })
+    return this.__new((rej, res) => {
+        return this.fork(
+          r => rej(r),
+          s => f(s).fork(rej, res)
+        )
+      }
+    );
   }
 
   empty() {
     return Task.of<any>(noop);
   }
 
+  /**
+   * For testing
+   */
+  toJSON() {
+    return this._json;
+  }
+
+  protected __new<R>(calc) {
+    return Task._new(calc, this._json);
+  }
+
+  protected static _new<R>(calc: (...args) => any, json) {
+    const t = new Task<R>(calc);
+    t._json = json;
+    return t;
+  }
+
   // Start of util functions
+  // These functions also record the initial fn and arg values for testing purposes
   static callP<R>(fn: (...args) => Promise<any>, ...args): Task<R> {
-    return new Task((rej, res) => {
+    return Task._new(
+      (rej, res) => {
       fn.apply(null, args)
       .then(res)
       .catch(rej);
+    },
+    {
+      fn,
+      args,
     })
   }
 }

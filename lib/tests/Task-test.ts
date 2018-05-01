@@ -33,3 +33,10 @@ t('Task#flatMap', ct => {
     }
   );
 });
+
+t('Task#toJSON', ct => {
+  const testFn = async () => {};
+  const t2 = Task.callP(testFn, 1).map(x => x);
+  ct.deepEquals(t2.toJSON(), {fn: testFn, args: [1]}, 'Task#toJSON returns arguments in the correct format.');
+  ct.end();
+});

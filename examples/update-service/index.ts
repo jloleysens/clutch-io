@@ -1,5 +1,5 @@
-import { Clutch } from '../../lib/Clutch';
-import { createDispatcher } from '../../lib/dispatcher';
+import { Clutch } from '../../lib';
+import { createDispatcher } from '../../lib';
 
 import { publish } from './commands/publish';
 import { PublishDocument } from './documents/PublishDocument';

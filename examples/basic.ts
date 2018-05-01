@@ -1,5 +1,5 @@
-import { createDispatcher } from '../source/dispatcher';
-import { Clutch } from '../source/Clutch';
+import { createDispatcher } from '../lib';
+import { Clutch } from '../lib';
 
 const c = Clutch.create();
 const dispatcher = createDispatcher(c);
