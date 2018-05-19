@@ -1,3 +1,15 @@
 node_modules
 yarn-error.log
 build
+
+# Code generation
+index.d.ts
+index.js
+index.js.map
+errors.d.ts
+errors.js
+errors.js.map
+utils.d.ts
+utils.js
+utils.js.map
+ext/**/*

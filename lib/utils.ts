@@ -7,5 +7,6 @@ export const is = {
   task: val => val && is.function(val.fork),
 }
 
-export const pipe = (...fns) => val => fns.reduce((y, x) => x(y), val);
+export const pipe = (...fns) => val => fns.reduce((y, f) => f(y), val);
 export const compose = (...fns) => pipe.apply(this, fns.reverse());
+export const noop = () => {};

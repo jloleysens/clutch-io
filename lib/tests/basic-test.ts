@@ -1,5 +1,6 @@
 import {describe} from 'riteway';
-import {Clutch} from '../index';
+import {Clutch, Task} from '../index';
+import * as t from 'tape';
 
 describe('basic/Clutch()', async should => {
   const clutch = Clutch.create();
@@ -10,32 +11,26 @@ describe('basic/Clutch()', async should => {
   assert({
     given: 'a new instance',
     should: 'have no commands',
-    actual: clutch.listCommands(),
+    actual: clutch.listAvailableTasks(),
     expected: [],
   });
 
-  clutch.registerCommand(test, json => {});
+  clutch.registerTask(test, json => {});
 
   assert({
     given: 'a new command',
     should: 'report on the new command',
-    actual: clutch.listCommands(),
+    actual: clutch.listAvailableTasks(),
     expected: ['test'],
   });
+});
 
-  assert({
-    given: 'a fn refernce',
-    should: 'return the correct internal reference',
-    actual: clutch.getCommand(test).fn,
-    expected: test,
-  });
+t('tasks/Clutch', async ct => {
+  const c = Clutch.create();
+  function* test () {}
+  c.registerTask(test, json => {});
 
-
-  assert({
-    given: 'a string name of a fn',
-    should: 'return the correct internal reference',
-    actual: clutch.getCommand('test').fn,
-    expected: test,
-  });
-
+  const result = c.getTask(test, {});
+  ct.assert(result instanceof Task, 'should get a task back');
+  ct.end();
 });

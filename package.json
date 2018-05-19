@@ -1,7 +1,8 @@
 {
   "name": "clutch-io",
   "version": "1.0.0",
-  "main": "build/index.js",
+  "main": "index.js",
+  "typings": "index.d.ts",
   "scripts": {
     "test": "ts-node lib/test.ts"
   },
