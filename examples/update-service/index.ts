@@ -8,7 +8,7 @@ import { PublishDocument } from './documents/PublishDocument';
         .create()
         .registerTask(publish, PublishDocument);
 
-    const result = clutch.getTask(publish, {deploymentId: 'asd', hash: '123', auth: '123', tag: '123', label: 'asd' });
+    const result = clutch.getTask(publish, {interestingInforation: 'hello'});
     console.log('dispatch result', result);
 })();
 
